@@ -137,3 +137,8 @@ let private clrsTree = {
 let ``Minimum of CLRS example tree`` () =
     let min = Veb.minimum clrsTree
     min =! Some 2
+
+[<Fact>]
+let ``Maximum of CLRS example tree`` () =
+    let max = Veb.maximum clrsTree
+    max =! Some 15

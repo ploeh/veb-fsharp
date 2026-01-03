@@ -9,3 +9,4 @@ type VebNode = {
 
 module Veb =
     let minimum tree = tree.Min
+    let maximum tree = tree.Max
