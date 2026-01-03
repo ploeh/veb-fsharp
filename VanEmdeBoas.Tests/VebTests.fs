@@ -1,6 +1,8 @@
 module Ploeh.CS.VanEmdeBoas.Tests.VebTests
 
 open Ploeh.CS.VanEmdeBoas
+open Xunit
+open Swensen.Unquote
 
 // Example tree taken from CLRS 3rd ed., page 548
 let private clrsTree = {
@@ -130,3 +132,8 @@ let private clrsTree = {
         } |]
     } |]
 }
+
+[<Fact>]
+let ``Minimum of CLRS example tree`` () =
+    let min = Veb.minimum clrsTree
+    min =! Some 2

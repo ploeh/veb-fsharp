@@ -6,3 +6,6 @@ type VebNode = {
     Max : int option
     Summary : VebNode option
     Cluster : VebNode array }
+
+module Veb =
+    let minimum tree = tree.Min
