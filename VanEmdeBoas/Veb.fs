@@ -5,4 +5,4 @@ type VebNode = {
     Min : int option
     Max : int option
     Summary : VebNode option
-    Clusters : VebNode array }
+    Cluster : VebNode array }
