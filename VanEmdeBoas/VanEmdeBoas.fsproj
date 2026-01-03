@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>Ploeh.CS.$(MSBuildProjectName)</AssemblyName>
+    <RootNamespace>Ploeh.CS.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
