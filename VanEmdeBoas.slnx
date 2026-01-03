@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="VanEmdeBoas.Tests/VanEmdeBoas.Tests.fsproj" Id="b7110c34-0532-43b9-94d8-95c5e3ab5814" />
   <Project Path="VanEmdeBoas/VanEmdeBoas.fsproj" />
 </Solution>
