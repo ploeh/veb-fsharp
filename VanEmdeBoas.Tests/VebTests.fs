@@ -142,3 +142,24 @@ let ``Minimum of CLRS example tree`` () =
 let ``Maximum of CLRS example tree`` () =
     let max = Veb.maximum clrsTree
     max =! Some 15
+
+[<Theory>]
+[<InlineData( 0, false)>]
+[<InlineData( 1, false)>]
+[<InlineData( 2,  true)>]
+[<InlineData( 3,  true)>]
+[<InlineData( 4,  true)>]
+[<InlineData( 5,  true)>]
+[<InlineData( 6, false)>]
+[<InlineData( 7,  true)>]
+[<InlineData( 8, false)>]
+[<InlineData( 9, false)>]
+[<InlineData(10, false)>]
+[<InlineData(11, false)>]
+[<InlineData(12, false)>]
+[<InlineData(13, false)>]
+[<InlineData(14,  true)>]
+[<InlineData(15,  true)>]
+let ``Membership tests of CLRS example tree`` candidate expected =
+    let actual = Veb.isMember clrsTree candidate
+    actual =! expected
