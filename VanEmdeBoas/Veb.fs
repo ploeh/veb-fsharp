@@ -39,9 +39,8 @@ module Veb =
                     let offset =
                         successor (tree.Cluster[high tree x]) (low tree x)
                     offset |> Option.map (index tree (high tree x))
-                | _ ->
-                    tree.Summary
-                    |> Option.bind (fun s -> successor s (high tree x))
-                    |> Option.bind (fun succCluster ->
-                        let offset = minimum (tree.Cluster[succCluster])
-                        offset |> Option.map (index tree succCluster))
+                | _ -> option {
+                    let! summary = tree.Summary
+                    let! succCluster = successor summary (high tree x)
+                    let! offset = minimum (tree.Cluster[succCluster])
+                    return index tree succCluster offset }
