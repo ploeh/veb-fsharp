@@ -8,6 +8,13 @@ type VebNode = {
     Cluster : VebNode array }
 
 module Veb =
+    let empty universeSize = {
+        UniverseSize = universeSize
+        Min = None
+        Max = None
+        Summary = None
+        Cluster = [||] }
+
     let minimum tree = tree.Min
     let maximum tree = tree.Max
 
@@ -71,3 +78,8 @@ module Veb =
                     | Some predCluster ->
                         let! offset = maximum (tree.Cluster[predCluster])
                         return index tree predCluster offset }
+
+    let private insertIntoEmpty tree x =
+        { tree with Min = Some x; Max = Some x }
+
+    let insert tree x = insertIntoEmpty tree x

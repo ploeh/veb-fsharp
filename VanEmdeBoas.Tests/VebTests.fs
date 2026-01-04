@@ -214,3 +214,12 @@ let ``Predecessor in CLRS example tree`` x expected =
 let ``Predecessor of low numbers in CLRS example tree`` x =
     let actual = Veb.predecessor clrsTree x
     None =! actual
+
+[<Fact>]
+let ``Insert into empty tree`` () =
+    let sut = Veb.empty 16
+
+    let actual = Veb.insert sut 9
+
+    actual.Min =! Some 9
+    actual.Max =! Some 9
