@@ -119,15 +119,23 @@ module Veb =
                     | None ->
                         let summary = tree.Summary |> Option.get
                         let updatedSummary = insert summary (high tree x)
+                        let arr =
+                            insertIntoEmpty
+                                (tree.Cluster[high tree x])
+                                (low tree x)
                         let updatedCluster =
-                            insertIntoEmpty (tree.Cluster[high tree x]) (low tree x)
-                        let arr = tree.Cluster |> Array.updateAt (high tree x) updatedCluster
-                        { tree with Summary = Some updatedSummary; Cluster = arr }
+                            tree.Cluster
+                            |> Array.updateAt (high tree x) arr
+                        { tree with
+                            Summary = Some updatedSummary
+                            Cluster = updatedCluster }
                     | Some _ ->
-                        let updateCluster =
+                        let arr =
                             insert (tree.Cluster[high tree x]) (low tree x)
-                        let arr = tree.Cluster |> Array.updateAt (high tree x) updateCluster
-                        { tree with Cluster = arr }
+                        let updatedCluster =
+                            tree.Cluster
+                            |> Array.updateAt (high tree x) arr
+                        { tree with Cluster = updatedCluster }
                 else tree
 
             if (tree.Max |> Option.get ) < x then
