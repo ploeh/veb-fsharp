@@ -8,12 +8,33 @@ type VebNode = {
     Cluster : VebNode array }
 
 module Veb =
-    let empty universeSize = {
-        UniverseSize = universeSize
-        Min = None
-        Max = None
-        Summary = None
-        Cluster = [||] }
+    let private log2 x = log (float x) / log 2.0
+
+    let private upperSqrt u =
+        int (2.0 ** (ceil (float (log2 (float u)) / 2.0)))
+
+    let private lowerSqrt u =
+        int (2.0 ** (floor (float (log2 (float u)) / 2.0)))
+
+    let rec empty universeSize =
+        if universeSize = 2 then
+            {
+                UniverseSize = universeSize
+                Min = None
+                Max = None
+                Summary = None
+                Cluster = [||]
+            }
+        else
+            let usqr = upperSqrt universeSize
+            let lwsqr = lowerSqrt universeSize
+            {
+                UniverseSize = universeSize
+                Min = None
+                Max = None
+                Summary = empty usqr |> Some
+                Cluster = Array.init usqr (fun _ -> empty lwsqr)
+            }
 
     let minimum tree = tree.Min
     let maximum tree = tree.Max
@@ -82,4 +103,33 @@ module Veb =
     let private insertIntoEmpty tree x =
         { tree with Min = Some x; Max = Some x }
 
-    let insert tree x = insertIntoEmpty tree x
+    let rec insert tree x =
+        match tree.Min with
+        | None -> insertIntoEmpty tree x
+        | Some min ->
+            let (tree, x) =
+                if x < min then
+                    // Exchange x and min
+                    { tree with Min = Some x }, min
+                else tree, x
+
+            let tree =
+                if tree.UniverseSize > 2 then
+                    match minimum (tree.Cluster[high tree x]) with
+                    | None ->
+                        let summary = tree.Summary |> Option.get
+                        let updatedSummary = insert summary (high tree x)
+                        let updatedCluster =
+                            insertIntoEmpty (tree.Cluster[high tree x]) (low tree x)
+                        let arr = tree.Cluster |> Array.updateAt (high tree x) updatedCluster
+                        { tree with Summary = Some updatedSummary; Cluster = arr }
+                    | Some _ ->
+                        let updateCluster =
+                            insert (tree.Cluster[high tree x]) (low tree x)
+                        let arr = tree.Cluster |> Array.updateAt (high tree x) updateCluster
+                        { tree with Cluster = arr }
+                else tree
+
+            if (tree.Max |> Option.get ) < x then
+                { tree with Max = Some x }
+            else tree

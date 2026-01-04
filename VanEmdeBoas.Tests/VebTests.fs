@@ -223,3 +223,16 @@ let ``Insert into empty tree`` () =
 
     actual.Min =! Some 9
     actual.Max =! Some 9
+
+[<Fact>]
+let ``Build up example tree by inserts`` () =
+    let actual = 
+        Veb.empty 16
+        |> (fun t -> Veb.insert t  2)
+        |> (fun t -> Veb.insert t  3)
+        |> (fun t -> Veb.insert t  4)
+        |> (fun t -> Veb.insert t  5)
+        |> (fun t -> Veb.insert t  7)
+        |> (fun t -> Veb.insert t 14)
+        |> (fun t -> Veb.insert t 15)
+    clrsTree =! actual
