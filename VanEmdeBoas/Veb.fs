@@ -35,10 +35,10 @@ module Veb =
             | Some min when x < min -> Some min
             | _ ->
                 match maximum (tree.Cluster[high tree x]) with
-                | Some maxLow when low tree x < maxLow ->
-                    let offset =
-                        successor (tree.Cluster[high tree x]) (low tree x)
-                    offset |> Option.map (index tree (high tree x))
+                | Some maxLow when low tree x < maxLow -> option {
+                     let! offset =
+                         successor (tree.Cluster[high tree x]) (low tree x)
+                     return index tree (high tree x) offset }
                 | _ -> option {
                     let! summary = tree.Summary
                     let! succCluster = successor summary (high tree x)
