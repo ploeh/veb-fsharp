@@ -163,3 +163,28 @@ let ``Maximum of CLRS example tree`` () =
 let ``Membership tests of CLRS example tree`` candidate expected =
     let actual = Veb.isMember clrsTree candidate
     actual =! expected
+
+[<Theory>]
+[<InlineData( 0,  2)>]
+[<InlineData( 1,  2)>]
+[<InlineData( 2,  3)>]
+[<InlineData( 3,  4)>]
+[<InlineData( 4,  5)>]
+[<InlineData( 5,  7)>]
+[<InlineData( 6,  7)>]
+[<InlineData( 7, 14)>]
+[<InlineData( 8, 14)>]
+[<InlineData( 9, 14)>]
+[<InlineData(10, 14)>]
+[<InlineData(11, 14)>]
+[<InlineData(12, 14)>]
+[<InlineData(13, 14)>]
+[<InlineData(14, 15)>]
+let ``Successor in CLRS example tree`` x expected =
+    let actual = Veb.successor clrsTree x
+    Some expected =! actual
+
+[<Fact>]
+let ``Successor of 15 in CLRS example tree`` () =
+    let actual = Veb.successor clrsTree 15
+    None =! actual
