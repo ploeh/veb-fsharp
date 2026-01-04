@@ -188,3 +188,29 @@ let ``Successor in CLRS example tree`` x expected =
 let ``Successor of 15 in CLRS example tree`` () =
     let actual = Veb.successor clrsTree 15
     None =! actual
+
+[<Theory>]
+[<InlineData( 3,  2)>]
+[<InlineData( 4,  3)>]
+[<InlineData( 5,  4)>]
+[<InlineData( 6,  5)>]
+[<InlineData( 7,  5)>]
+[<InlineData( 8,  7)>]
+[<InlineData( 9,  7)>]
+[<InlineData(10,  7)>]
+[<InlineData(11,  7)>]
+[<InlineData(12,  7)>]
+[<InlineData(13,  7)>]
+[<InlineData(14,  7)>]
+[<InlineData(15, 14)>]
+let ``Predecessor in CLRS example tree`` x expected =
+    let actual = Veb.predecessor clrsTree x
+    Some expected =! actual
+
+[<Theory>]
+[<InlineData( 0)>]
+[<InlineData( 1)>]
+[<InlineData( 2)>]
+let ``Predecessor of low numbers in CLRS example tree`` x =
+    let actual = Veb.predecessor clrsTree x
+    None =! actual
