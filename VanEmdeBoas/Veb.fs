@@ -128,18 +128,18 @@ module Veb =
                                 (tree.Cluster[high tree x])
                                 (low tree x)
                         let updatedCluster =
-                            tree.Cluster
-                            |> Array.updateAt (high tree x) arr
-                        do! State.put { tree with
-                                            Summary = Some updatedSummary
-                                            Cluster = updatedCluster }
+                            tree.Cluster |> Array.updateAt (high tree x) arr
+                        do! State.modify (fun t ->
+                            { t with
+                                Summary = Some updatedSummary
+                                Cluster = updatedCluster })
                     | Some _ ->
                         let arr =
                             insert (tree.Cluster[high tree x]) (low tree x)
                         let updatedCluster =
-                            tree.Cluster
-                            |> Array.updateAt (high tree x) arr
-                        do! State.put { tree with Cluster = updatedCluster }
+                            tree.Cluster |> Array.updateAt (high tree x) arr
+                        do! State.modify (fun t ->
+                            { t with Cluster = updatedCluster })
 
                 let! max = State.gets _.Max
                 if (max |> Option.exists ((>) x)) then
