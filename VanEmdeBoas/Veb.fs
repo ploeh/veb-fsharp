@@ -141,8 +141,8 @@ module Veb =
                             |> Array.updateAt (high tree x) arr
                         do! State.put { tree with Cluster = updatedCluster }
 
-                let! max = State.gets (_.Max)
-                if (max |> Option.get ) < x then
+                let! max = State.gets _.Max
+                if (max |> Option.exists ((>) x)) then
                     do! State.modify (fun t -> { t with Max = Some x })
             }
 
