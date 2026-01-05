@@ -145,3 +145,74 @@ module Veb =
             }
 
             comp |> State.exec tree
+
+    let rec delete tree x =
+        let rec comp x = state {
+            let! isSingleton = state {
+                let! min = State.gets _.Min
+                let! max = State.gets _.Max
+                return min = max }
+            if isSingleton then
+                do! State.modify (fun t -> { t with Min = None; Max = None })
+
+            else
+                let! u = State.gets _.UniverseSize
+                if u = 2 then
+                    if x = 0 then
+                        do! State.modify (fun t -> { t with Min = Some 1 })
+                    else
+                        do! State.modify (fun t -> { t with Min = Some 0 })
+                    do! State.modify (fun t -> { t with Max = t.Min })
+
+                else
+                    let! min = State.gets _.Min
+                    if Option.exists ((=) x) min then
+                        // Safe, because we've already tested for u = 2, but should
+                        // be refactored to avoid partial functions
+                        let! summary = State.gets (_.Summary >> Option.get)
+                        let firstCluster = minimum summary |> Option.get
+                        let! x =
+                            State.gets (fun t ->
+                                index t firstCluster
+                                    (minimum (t.Cluster[firstCluster]) |> Option.get))
+                        do! State.modify (fun t -> { t with Min = Some x })
+
+                    do! State.modify (fun t -> 
+                        let arr = delete (t.Cluster[high t x]) (low t x)
+                        let newClusters =
+                            t.Cluster |> Array.updateAt (high t x) arr
+                        { t with Cluster = newClusters })
+
+                    match! State.gets (fun t -> minimum (t.Cluster[high t x])) with
+                    | None ->
+                        // Safe, because we've already tested for u = 2, but should
+                        // be refactored to avoid partial functions
+                        let! summary = State.gets (_.Summary >> Option.get)
+                        let updatedSummary =
+                            delete summary (high tree x)
+                        do! State.modify (fun t -> { t with Summary = Some updatedSummary })
+
+                        let! max = State.gets _.Max
+                        if Option.exists ((=) x) max then
+                            let! summary = State.gets (_.Summary >> Option.get)
+                            match maximum summary with
+                            | None ->
+                                let! min = State.gets _.Min
+                                do! State.modify (fun t -> { t with Max = min })
+                            | Some summaryMax ->
+                                let! offset =
+                                    State.gets (fun t ->
+                                        maximum (t.Cluster[summaryMax]) |> Option.get)
+                                let newMax = index tree summaryMax offset
+                                do! State.modify (fun t -> { t with Max = Some newMax })
+                    | Some _ ->
+                        let! max = State.gets _.Max
+                        if Option.exists ((=) x) max then
+                            let! offset =
+                                State.gets (fun t ->
+                                    maximum (t.Cluster[high t x]) |> Option.get)
+                            let newMax = index tree (high tree x) offset
+                            do! State.modify (fun t -> { t with Max = Some newMax })
+        }
+
+        comp x |> State.exec tree

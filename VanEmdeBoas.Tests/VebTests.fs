@@ -236,3 +236,46 @@ let ``Build up example tree by inserts`` () =
         |> (fun t -> Veb.insert t 14)
         |> (fun t -> Veb.insert t 15)
     clrsTree =! actual
+
+[<Theory>]
+[<InlineData( 0)>]
+[<InlineData( 1)>]
+[<InlineData( 2)>]
+[<InlineData( 3)>]
+[<InlineData( 4)>]
+[<InlineData( 5)>]
+[<InlineData( 6)>]
+[<InlineData( 7)>]
+[<InlineData( 8)>]
+[<InlineData( 9)>]
+[<InlineData(10)>]
+[<InlineData(11)>]
+[<InlineData(12)>]
+[<InlineData(13)>]
+[<InlineData(14)>]
+[<InlineData(15)>]
+let ``Insert and delete`` x =
+    let sut = Veb.empty 16 |> (fun t -> Veb.insert t x)
+    let actual = Veb.delete sut x
+    Veb.empty 16 =! actual
+
+[<Theory>]
+[<InlineData( 0)>]
+[<InlineData( 1)>]
+[<InlineData( 2)>]
+[<InlineData( 3)>]
+[<InlineData( 4)>]
+[<InlineData( 5)>]
+[<InlineData( 6)>]
+[<InlineData( 7)>]
+[<InlineData( 8)>]
+[<InlineData( 9)>]
+[<InlineData(10)>]
+[<InlineData(11)>]
+[<InlineData(12)>]
+[<InlineData(13)>]
+[<InlineData(14)>]
+[<InlineData(15)>]
+let ``Delete from example tree`` x =
+    let actual = Veb.delete clrsTree x
+    test <@ not (Veb.isMember actual x) @>
