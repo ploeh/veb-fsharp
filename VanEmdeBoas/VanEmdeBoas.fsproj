@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Include="Option.fs" />
+    <Compile Include="State.fs" />
     <Compile Include="Veb.fs" />
   </ItemGroup>
 
