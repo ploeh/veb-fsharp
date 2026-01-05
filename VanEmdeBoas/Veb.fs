@@ -103,6 +103,10 @@ module Veb =
     let private insertIntoEmpty tree x =
         { tree with Min = Some x; Max = Some x }
 
+    let private modifySummary f x =
+        let updatedSummary = f x
+        State.modify (fun t -> { t with Summary = Some updatedSummary })
+
     let private modifyCluster f clusterIndex x = state {
         let! tree = State.get
         let arr = f tree.Cluster[clusterIndex] x
@@ -129,8 +133,7 @@ module Veb =
                     // effectively equivalent to V.u > 2
                     match minimum (tree.Cluster[high tree x]) with
                     | None ->
-                        let updatedSummary = insert summary (high tree x)
-                        do! State.modify (fun t -> { t with Summary = Some updatedSummary })
+                        do! modifySummary (insert summary) (high tree x)
                         do! modifyCluster
                                 insertIntoEmpty (high tree x) (low tree x)
                     | Some _ ->
