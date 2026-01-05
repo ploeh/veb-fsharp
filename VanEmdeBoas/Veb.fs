@@ -177,11 +177,8 @@ module Veb =
                                     (minimum (t.Cluster[firstCluster]) |> Option.get))
                         do! State.modify (fun t -> { t with Min = Some x })
 
-                    do! State.modify (fun t -> 
-                        let arr = delete (t.Cluster[high t x]) (low t x)
-                        let newClusters =
-                            t.Cluster |> Array.updateAt (high t x) arr
-                        { t with Cluster = newClusters })
+                    let! t = State.get
+                    do! modifyCluster delete (high t x) (low t x)
 
                     match! State.gets (fun t -> minimum (t.Cluster[high t x])) with
                     | None ->
