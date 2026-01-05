@@ -115,11 +115,13 @@ module Veb =
                     else return x
                 }
 
-                let! u = State.gets (_.UniverseSize)
-                if u > 2 then
+                match! State.gets _.Summary with
+                | None -> ()
+                | Some summary ->
+                    // This case only occurs when UniverseSize > 2, so this is
+                    // effectively equivalent to V.u > 2
                     match minimum (tree.Cluster[high tree x]) with
                     | None ->
-                        let summary = tree.Summary |> Option.get
                         let updatedSummary = insert summary (high tree x)
                         let arr =
                             insertIntoEmpty
