@@ -103,6 +103,13 @@ module Veb =
     let private insertIntoEmpty tree x =
         { tree with Min = Some x; Max = Some x }
 
+    let private modifyCluster f clusterIndex x = state {
+        let! tree = State.get
+        let arr = f tree.Cluster[clusterIndex] x
+        let updatedCluster = tree.Cluster |> Array.updateAt clusterIndex arr
+        do! State.put { tree with Cluster = updatedCluster }
+    }
+
     let rec insert tree x =
         match tree.Min with
         | None -> insertIntoEmpty tree x
@@ -123,23 +130,11 @@ module Veb =
                     match minimum (tree.Cluster[high tree x]) with
                     | None ->
                         let updatedSummary = insert summary (high tree x)
-                        let arr =
-                            insertIntoEmpty
-                                (tree.Cluster[high tree x])
-                                (low tree x)
-                        let updatedCluster =
-                            tree.Cluster |> Array.updateAt (high tree x) arr
-                        do! State.modify (fun t ->
-                            { t with
-                                Summary = Some updatedSummary
-                                Cluster = updatedCluster })
+                        do! State.modify (fun t -> { t with Summary = Some updatedSummary })
+                        do! modifyCluster
+                                insertIntoEmpty (high tree x) (low tree x)
                     | Some _ ->
-                        let arr =
-                            insert (tree.Cluster[high tree x]) (low tree x)
-                        let updatedCluster =
-                            tree.Cluster |> Array.updateAt (high tree x) arr
-                        do! State.modify (fun t ->
-                            { t with Cluster = updatedCluster })
+                        do! modifyCluster insert (high tree x) (low tree x)
 
                 let! max = State.gets _.Max
                 if (max |> Option.exists ((>) x)) then
