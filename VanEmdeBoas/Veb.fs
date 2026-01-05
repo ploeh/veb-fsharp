@@ -107,14 +107,16 @@ module Veb =
         match tree.Min with
         | None -> insertIntoEmpty tree x
         | Some min ->
-            let (tree, x) =
-                if x < min then
-                    // Exchange x and min
-                    { tree with Min = Some x }, min
-                else tree, x
+            let comp = state {
+                let! x = state {
+                    if x < min then
+                        do! State.put { tree with Min = Some x }
+                        return min
+                    else return x
+                }
 
-            let tree =
-                if tree.UniverseSize > 2 then
+                let! u = State.gets (_.UniverseSize)
+                if u > 2 then
                     match minimum (tree.Cluster[high tree x]) with
                     | None ->
                         let summary = tree.Summary |> Option.get
@@ -126,18 +128,20 @@ module Veb =
                         let updatedCluster =
                             tree.Cluster
                             |> Array.updateAt (high tree x) arr
-                        { tree with
-                            Summary = Some updatedSummary
-                            Cluster = updatedCluster }
+                        do! State.put { tree with
+                                            Summary = Some updatedSummary
+                                            Cluster = updatedCluster }
                     | Some _ ->
                         let arr =
                             insert (tree.Cluster[high tree x]) (low tree x)
                         let updatedCluster =
                             tree.Cluster
                             |> Array.updateAt (high tree x) arr
-                        { tree with Cluster = updatedCluster }
-                else tree
+                        do! State.put { tree with Cluster = updatedCluster }
 
-            if (tree.Max |> Option.get ) < x then
-                { tree with Max = Some x }
-            else tree
+                let! max = State.gets (_.Max)
+                if (max |> Option.get ) < x then
+                    do! State.modify (fun t -> { t with Max = Some x })
+            }
+
+            comp |> State.exec tree

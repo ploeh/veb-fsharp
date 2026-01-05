@@ -19,6 +19,10 @@ type StateBuilder() =
     member _.Return a = State.returnState a
     member _.ReturnFrom stateFn = stateFn
     member _.Bind (stateFn, f) = State.bind f stateFn
+    member _.Zero () = State.returnState ()
+    member _.Delay f = f ()
+    member _.Combine (stateFn1, stateFn2) =
+        State.bind (fun () -> stateFn2) stateFn1
 
 [<AutoOpen>]
 module StateComputationExpression =
